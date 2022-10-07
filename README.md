@@ -28,7 +28,11 @@ To download the project dependencies internet access is needed.
 - If you plan to execute the script in an air-gaped environment, first download the project and its dependencies to a temporary node with internet access, than deploy them to the final destination.
 
 Install Python 3.7 and virtual env if not available on cluster node. (Python 3.6.8 is also tested)
-```shell
+---
+
+```
+sudo -i
+
 yum install -y gcc openssl-devel bzip2-devel libffi-devel zlib-devel xz-devel && 
 cd /usr/src && 
 wget https://www.python.org/ftp/python/3.7.11/Python-3.7.11.tgz && 
@@ -37,39 +41,51 @@ cd Python-3.7.11 &&
 ./configure --enable-optimizations && 
 make altinstall && 
 rm -f /usr/src/Python-3.7.11.tgz && 
-python3.7 -V &&
+/usr/local/bin/python3.7 -V &&
 cd &&
 echo "Python installation successfully finished" &&
-python3.7 -m pip install --user virtualenv
+/usr/local/bin/python3.7 -m pip install --user virtualenv
 ```
+
+---
 
 ### Node with internet access
 
 Download the project to **/opt**
-```shell
+```
+shell
 cd /opt
 yum -y install git
 git clone <repo_url>
+git clone https://github.com/tlepple/mac-cdh-discovery-bundle-builder.git
 ```
 
 ### Node without internet access
 
 Login to a node with internet access, and download the project
-```shell
+```
+shell
 cd /tmp
 yum -y install git
 git clone <repo_url>
+git clone https://github.com/tlepple/mac-cdh-discovery-bundle-builder.git
 cd /tmp/mac-cdh-discovery-bundle-builder/
 ```
 
 **Imporant** same version of pythons should be used to resolve the dependencies on the temporary location.
 
 Download the project dependencies, **wheelhouse.tar.gz** is createad as a result
-```shell
-python3.7 -m venv .venv
+---
+```
+cd /opt/mac-cdh-discovery-bundle-builder
+/usr/local/bin/python3.7 -m venv .venv
 source .venv/bin/activate
+
+
 ./download_dependencies.sh
 ```
+
+----
 
 Copy the project to the final destination
 ```shell
@@ -85,7 +101,7 @@ cd /opt/mac-cdh-discovery-bundle-builder/
 
 Create a new virtual environment inside the project directory:
 ````shell
-python3.7 -m venv .venv
+/usr/local/bin/python3.7 -m venv .venv
 source .venv/bin/activate
 ````
 
@@ -112,6 +128,17 @@ cm_user=<cm_admin_username>
 cm_password=<cm_admin_password>
 db_driver_path=<jdbc-connector-path>
 ```
+---
+```
+vi /opt/mac-cdh-discovery-bundle-builder/mac-discovery-bundle-builder/config/config.ini
+
+[credentials]
+cm_user=admin
+cm_password=Supersecret1!
+[database]
+db_driver_path=/usr/share/java/postgresql-connector-java.jar
+```
+---
 
 In a kerberized environment you should kinit with principal who is member of HDFS supergroup:
 ```shell
@@ -130,6 +157,14 @@ Use the following command to execute the collection:
 ```shell
 ./discovery_bundle_builder.sh --cm-host https(s)://<cm-hostname>:<cm-port> --time-range=7 --output-dir /tmp/discovery_bundle
 ```
+---
+```
+cd /opt/mac-cdh-discovery-bundle-builder
+./discovery_bundle_builder.sh --cm-host https(s)://<cm-hostname>:<cm-port> --time-range=7 --output-dir /tmp/discovery_bundle
+
+./discovery_bundle_builder.sh --cm-host http://54.172.241.3:7180 --time-range=7 --output-dir /tmp/discovery_bundle
+```
+---
 
 To execute a selected module:
 ```shell
