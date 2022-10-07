@@ -134,7 +134,7 @@ vi /opt/mac-cdh-discovery-bundle-builder/mac-discovery-bundle-builder/config/con
 
 [credentials]
 cm_user=admin
-cm_password=Supersecret1!
+cm_password=Supersecret1
 [database]
 db_driver_path=/usr/share/java/postgresql-connector-java.jar
 ```
