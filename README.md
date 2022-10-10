@@ -49,22 +49,45 @@ echo "Python installation successfully finished" &&
 
 ---
 
-### Node with internet access
+## On a Node with internet access
+
+---
 
 Download the project to **/opt**
+
 ```
-shell
+
 cd /opt
 yum -y install git
 git clone <repo_url>
 git clone https://github.com/tlepple/mac-cdh-discovery-bundle-builder.git
 ```
+---
 
-### Node without internet access
+Download the project dependencies, **wheelhouse.tar.gz** is createad as a result
+
+---
+
+```
+cd /opt/mac-cdh-discovery-bundle-builder
+/usr/local/bin/python3.7 -m venv .venv
+source .venv/bin/activate
+
+
+./download_dependencies.sh
+pip install -r requirements.txt
+
+```
+
+
+---
+
+## On a Node without internet access
 
 Login to a node with internet access, and download the project
+
 ```
-shell
+
 cd /tmp
 yum -y install git
 git clone <repo_url>
@@ -88,38 +111,44 @@ source .venv/bin/activate
 ----
 
 Copy the project to the final destination
-```shell
+```
 rsync  -Paz --exclude={'.git','.venv'}  /tmp/mac-cdh-discovery-bundle-builder <target-node>:/opt
 ```
 
 ### On the target node
 
 Go to the project directory:
-```shell
+```
 cd /opt/mac-cdh-discovery-bundle-builder/
 ```
 
 Create a new virtual environment inside the project directory:
-````shell
+````
 /usr/local/bin/python3.7 -m venv .venv
 source .venv/bin/activate
 ````
 
-Install the dependencies for the project:
-- For environments with internet access:
-```shell
-pip install -r requirements.txt
-```
+
 
 - For environments without internet access use the prepacked dependencies:
-```shell
+```
  tar -zxf wheelhouse.tar.gz
  pip install -r wheelhouse/requirements.txt --no-index --find-links wheelhouse
 ```
 
+---
+---
+
+
+##  Run the following steps regardless 
+---
+
+###  Config credentials to call the Cloudera Manager API
+
 - Set the Cloudera Manager credentials in [config.ini](./mac-discovery-bundle-builder/config/config.ini). 
 - Provide the path the JDBC driver for the HMS and Sentry databases. Usually it is located under **/usr/share/java/**
-```shell
+
+```
 vi /opt/mac-cdh-discovery-bundle-builder/mac-discovery-bundle-builder/config/config.ini
 
 #Edit the file
@@ -146,15 +175,16 @@ kinit -kt <PATH_TO_HDFS_SUPERGROUP_KEYTAB> <HDFS_PRINCIPAL>
 ```
 
 In a NON kerberized environment you should use a username who is member of HDFS supergroup:
-```shell
+```
 export HADOOP_USER_NAME=hdfs
 ```
+---
 
 ## Run the discovery bundle tool
 
 Use the following command to execute the collection:
 
-```shell
+```
 ./discovery_bundle_builder.sh --cm-host https(s)://<cm-hostname>:<cm-port> --time-range=7 --output-dir /tmp/discovery_bundle
 ```
 ---
@@ -167,7 +197,7 @@ cd /opt/mac-cdh-discovery-bundle-builder
 ---
 
 To execute a selected module:
-```shell
+```
 ./discovery_bundle_builder.sh --cm-host http(s)://<cm-hostname>:<cm-port> --time-range=7 --module cm_api --output-dir /tmp/discovery_bundle
 ```
 
